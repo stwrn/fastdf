@@ -1,9 +1,15 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
-build-backend = "setuptools.build_meta"
+   requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+   build-backend = "setuptools.build_meta"
 
-[tool.pytest.ini_options]
-addopts = "-ra -q"
-testpaths = [
-    "tests",
-]
+   [tool.setuptools_scm]
+   write_to = "src/fastdf/_version.py"
+
+   [tool.black]
+   line-length = 88
+   target-version = ['py37']
+   include = '\.pyi?$'
+
+   [tool.isort]
+   profile = "black"
+   

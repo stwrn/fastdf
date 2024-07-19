@@ -29,9 +29,17 @@ In our benchmarks, FastDF has shown:
 
 ## 🛠 Installation
 
-```bash
-pip install git+https://github.com/stwrn/fastdf.git
-```
+   You can install FastDF using pip:
+
+   ```bash
+   pip install fastdf
+   ```
+
+   For the latest development version, you can install directly from GitHub:
+
+   ```bash
+   pip install git+https://github.com/stwrn/fastdf.git
+   ```
 
 ## 🚦 Quick Start
 
