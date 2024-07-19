@@ -1,0 +1,14 @@
+fastdf/
+│
+├── src/
+│   └── fastdf/
+│       ├── __init__.py
+│       └── core.py
+│
+├── tests/
+│   └── test_fastdf.py
+│
+├── README.md
+├── setup.py
+├── pyproject.toml
+└── .gitignore

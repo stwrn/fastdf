@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+setup.py
+src/fastdf/__init__.py
+src/fastdf/core.py
+src/fastdf.egg-info/PKG-INFO
+src/fastdf.egg-info/SOURCES.txt
+src/fastdf.egg-info/dependency_links.txt
+src/fastdf.egg-info/requires.txt
+src/fastdf.egg-info/top_level.txt
