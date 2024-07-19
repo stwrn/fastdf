@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: fastdf
-Version: 0.1.0
+Version: 0.1.1
 Summary: A high-performance DataFrame implementation built on top of NumPy
 Home-page: https://github.com/stwrn/fastdf
 Author: Your Name
@@ -51,9 +51,17 @@ In our benchmarks, FastDF has shown:
 
 ## 🛠 Installation
 
-```bash
-pip install git+https://github.com/stwrn/fastdf.git
-```
+   You can install FastDF using pip:
+
+   ```bash
+   pip install fastdf
+   ```
+
+   For the latest development version, you can install directly from GitHub:
+
+   ```bash
+   pip install git+https://github.com/stwrn/fastdf.git
+   ```
 
 ## 🚦 Quick Start
 
