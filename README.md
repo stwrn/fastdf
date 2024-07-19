@@ -66,11 +66,13 @@ FastDF is designed to be a drop-in replacement for basic pandas operations. You 
 
 ```python
 # Your existing pandas code
-result = df.loc[1000:2000, 'column_name']
+result = pandas_df.loc[1000:2000][ 'B']
+print(f"Pandas result {result}")
 
 # With FastDF
-fast_df = fdf.from_pandas(df)
-result = fast_df.loc[1000:2000, 'column_name']
+fast_df = FastDataFrame.from_pandas(pandas_df)
+result_fdf = fast_df.loc[1000:2000][ 'B']
+print(f"FastDF result {result_fdf}")
 ```
 
 ## 🤝 Contributing

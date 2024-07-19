@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import time
 from typing import List, Dict, Union, Any
-
 class FastRow:
     def __init__(self, data: np.ndarray, column_indices: Dict[str, int]):
         self.data = data
@@ -10,7 +9,6 @@ class FastRow:
 
     def __getitem__(self, key: str) -> Any:
         return self.data[self.column_indices[key]]
-
 class LocIndexer:
     def __init__(self, obj: 'FastDataFrameView'):
         self.obj = obj
@@ -23,7 +21,7 @@ class LocIndexer:
             raise IndexError("FastDataFrame index out of range")
         elif isinstance(key, slice):
             start = self.obj.start if key.start is None else (self.obj.start + key.start if key.start >= 0 else self.obj.stop + key.start)
-            stop = self.obj.stop if key.stop is None else (self.obj.start + key.stop if key.stop >= 0 else self.obj.stop + key.stop)
+            stop = self.obj.stop if key.stop is None else (self.obj.start + key.stop + 1 if key.stop >= 0 else self.obj.stop + key.stop + 1)
             start = max(self.obj.start, min(start, self.obj.stop))
             stop = max(start, min(stop, self.obj.stop))
             return FastDataFrameView(self.obj.data, self.obj.column_names, self.obj.column_indices, start, stop)

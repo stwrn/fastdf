@@ -1,6 +1,12 @@
+.gitignore
 README.md
+project-structure.txt
 pyproject.toml
 setup.py
+dist/fastdf-0.1.0-py3-none-any.whl
+dist/fastdf-0.1.0.tar.gz
+dist/fastdf-0.1.1-py3-none-any.whl
+dist/fastdf-0.1.1.tar.gz
 src/fastdf/__init__.py
 src/fastdf/core.py
 src/fastdf.egg-info/PKG-INFO
@@ -8,3 +14,6 @@ src/fastdf.egg-info/SOURCES.txt
 src/fastdf.egg-info/dependency_links.txt
 src/fastdf.egg-info/requires.txt
 src/fastdf.egg-info/top_level.txt
+src/fastdf/__pycache__/__init__.cpython-311.pyc
+src/fastdf/__pycache__/core.cpython-311.pyc
+tests/test_fastdf.py

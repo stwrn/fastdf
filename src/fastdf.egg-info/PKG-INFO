@@ -18,7 +18,13 @@ Classifier: Programming Language :: Python :: 3.10
 Classifier: Topic :: Scientific/Engineering :: Information Analysis
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.18.0
+Requires-Dist: pandas>=1.0.0
 Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
 
 # FastDF: High-Performance DataFrame for Python
 
