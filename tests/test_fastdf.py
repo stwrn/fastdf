@@ -2,198 +2,111 @@ import pandas as pd
 import numpy as np
 import time
 from fastdf import fdf 
+import unittest
 
-def create_test_data(size=1000000):
-    return pd.DataFrame({
-        'A': np.random.rand(size),
-        'B': np.random.rand(size),
-        'C': np.random.rand(size)
-    })
+print("UNITTEST")
 
-def time_operation(func, *args):
-    start = time.time()
-    func(*args)
-    return time.time() - start
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        return result, end - start
+    return wrapper
 
-def test_element_access(pandas_df, fast_df, iterations=1000000):
-    def pandas_access(df):
-        for i in range(iterations):
-            _ = df.loc[i % len(df)]['B']
+def time_access(df, iterations=1000000):
+    df_len = len(df)
+    start = time.perf_counter()
+    for i in range(iterations):
+        _ = df.loc[i % df_len]['col_1']
+    return time.perf_counter() - start
 
-    def fast_access(df):
-        for i in range(iterations):
-            _ = df.loc[i % len(df)]['B']
+class TestFastDataFrame(unittest.TestCase):
+    def setUp(self):
+        self.data = np.random.rand(100000, 100)
+        self.columns = [f'col_{i}' for i in range(100)]
+        self.pdf = pd.DataFrame(self.data, columns=self.columns)
+        self.fdf = fdf(self.data, self.columns)
 
-    pandas_time = time_operation(pandas_access, pandas_df)
-    fast_time = time_operation(fast_access, fast_df)
-    
-    return pandas_time, fast_time
+    def test_indexing(self):
+        np.testing.assert_array_equal(self.fdf['col_0'], self.pdf['col_0'])
 
-def test_slice_creation(pandas_df, fast_df, iterations=10000):
-    def pandas_slice(df):
-        for i in range(iterations):
-            slice_start = i % (len(df) - 10)
-            _ = df.loc[slice_start:slice_start+10]
+    def test_slicing(self):
+        np.testing.assert_array_equal(self.fdf.loc[:2]['col_0'], self.pdf.loc[:2]['col_0'])
 
-    def fast_slice(df):
-        for i in range(iterations):
-            slice_start = i % (len(df) - 10)
-            _ = df.loc[slice_start:slice_start+10]
+    def test_shift(self):
+        np.testing.assert_array_equal(self.fdf.shift(1)['col_0'], self.pdf.shift(1)['col_0'])
+        np.testing.assert_array_equal(self.fdf.shift(1, fill_value=0)['col_0'], self.pdf.shift(1, fill_value=0)['col_0'])
 
-    pandas_time = time_operation(pandas_slice, pandas_df)
-    fast_time = time_operation(fast_slice, fast_df)
-    
-    return pandas_time, fast_time
+    def test_any(self):
+        np.testing.assert_array_equal(self.fdf.any(axis=0), self.pdf.any(axis=0))
 
-def test_nested_slice(pandas_df, fast_df, iterations=10000):
-    def pandas_nested_slice(df):
-        for i in range(iterations):
-            slice_start = i % (len(df) - 20)
-            slice1 = df.loc[slice_start:slice_start+20]
-            _ = slice1.loc[5:15]
+    def test_mean(self):
+        np.testing.assert_array_almost_equal(self.fdf.mean(), self.pdf.mean())
+        np.testing.assert_array_almost_equal(self.fdf.mean(axis=0), self.pdf.mean(axis=0))
+        np.testing.assert_array_almost_equal(self.fdf.mean(axis=1), self.pdf.mean(axis=1))
 
-    def fast_nested_slice(df):
-        for i in range(iterations):
-            slice_start = i % (len(df) - 20)
-            slice1 = df.loc[slice_start:slice_start+20]
-            _ = slice1.loc[5:15]
+    def test_sum(self):
+        np.testing.assert_array_almost_equal(self.fdf.sum(), self.pdf.sum())
+        np.testing.assert_array_almost_equal(self.fdf.sum(axis=0), self.pdf.sum(axis=0))
+        np.testing.assert_array_almost_equal(self.fdf.sum(axis=1), self.pdf.sum(axis=1))
 
-    pandas_time = time_operation(pandas_nested_slice, pandas_df)
-    fast_time = time_operation(fast_nested_slice, fast_df)
-    
-    return pandas_time, fast_time
+    def test_min(self):
+        np.testing.assert_array_almost_equal(self.fdf.min(), self.pdf.min())
+        np.testing.assert_array_almost_equal(self.fdf.min(axis=0), self.pdf.min(axis=0))
+        np.testing.assert_array_almost_equal(self.fdf.min(axis=1), self.pdf.min(axis=1))
 
-def run_performance_tests():
-    pandas_df = create_test_data()
-    fast_df =  fdf.from_pandas(pandas_df)
+    def test_max(self):
+        np.testing.assert_array_almost_equal(self.fdf.max(), self.pdf.max())
+        np.testing.assert_array_almost_equal(self.fdf.max(axis=0), self.pdf.max(axis=0))
+        np.testing.assert_array_almost_equal(self.fdf.max(axis=1), self.pdf.max(axis=1))
 
-    print("Performance Tests:")
-    print("-----------------")
+    def test_isna(self):
+        np.testing.assert_array_equal(self.fdf.isna(), self.pdf.isna())
 
-    # Element access test
-    pandas_time, fast_time = test_element_access(pandas_df, fast_df)
-    print(f"\nElement Access:")
-    print(f"Pandas time: {pandas_time:.6f} seconds")
-    print(f"FastDF time: {fast_time:.6f} seconds")
-    print(f"Speedup: {pandas_time / fast_time:.2f}x")
+    def test_fillna(self):
+        np.testing.assert_array_equal(self.fdf.fillna(0).data, self.pdf.fillna(0).values)
 
-    # Slice creation test
-    pandas_time, fast_time = test_slice_creation(pandas_df, fast_df)
-    print(f"\nSlice Creation:")
-    print(f"Pandas time: {pandas_time:.6f} seconds")
-    print(f"FastDF time: {fast_time:.6f} seconds")
-    print(f"Speedup: {pandas_time / fast_time:.2f}x")
+    def test_dropna(self):
+        np.testing.assert_array_equal(self.fdf.dropna().data, self.pdf.dropna().values)
+        np.testing.assert_array_equal(self.fdf.dropna(axis=1).data, self.pdf.dropna(axis=1).values)
 
-    # Nested slice test
-    pandas_time, fast_time = test_nested_slice(pandas_df, fast_df)
-    print(f"\nNested Slice:")
-    print(f"Pandas time: {pandas_time:.6f} seconds")
-    print(f"FastDF time: {fast_time:.6f} seconds")
-    print(f"Speedup: {pandas_time / fast_time:.2f}x")
+    def test_overwrite(self):
+        new_values = np.random.rand(100000)
+        self.pdf['col_0'] = new_values
+        self.fdf['col_0'] = new_values
+        np.testing.assert_array_equal(self.fdf['col_0'], self.pdf['col_0'])
 
-if __name__ == "__main__":
-    run_performance_tests()
+    def test_performance(self):
+        operations = [
+            ('Indexing', lambda df: df['col_0']),
+            ('Slicing', lambda df: df.loc[:100]),
+            ('Shift', lambda df: df.shift(1)),
+            ('Mean', lambda df: df.mean()),
+            ('Sum', lambda df: df.sum()),
+            ('Min', lambda df: df.min()),
+            ('Max', lambda df: df.max()),
+            ('IsNA', lambda df: df.isna()),
+            ('FillNA', lambda df: df.fillna(0)),
+            ('DropNA', lambda df: df.dropna()),
+            ('Overwrite', lambda df: df.__setitem__('col_0', np.random.rand(len(df)))),
+        ]
 
-#import pytest
-#import numpy as np
-#import pandas as pd
-#import time
-#from fastdf import fdf 
-#
-#def generate_test_data(size=10000000):
-#    return pd.DataFrame({
-#        'A': np.random.rand(size),
-#        'B': np.random.rand(size),
-#        'C': np.random.rand(size)
-#    })
-#
-#@pytest.fixture
-#def test_data():
-#    return generate_test_data()
-#
-#def test_from_pandas(test_data):
-#    fast_df = fdf.from_pandas(test_data) 
-#    assert fast_df.data.shape == test_data.shape
-#    assert all(fast_df.column_names == test_data.columns)
-#
-#def test_getitem_performance(test_data):
-#    fast_df = fdf.from_pandas(test_data)  
-#    
-#    start = time.time()
-#    for _ in range(10000):
-#        _ = test_data.loc[500000, 'B']
-#    pandas_time = time.time() - start
-#    
-#    start = time.time()
-#    for _ in range(10000):
-#        _ = fast_df.loc[500000, 'B']
-#    fastdf_time = time.time() - start
-#    
-#    assert fastdf_time < pandas_time
-#    speedup = pandas_time / fastdf_time
-#    print(f"\nGetitem speedup: {speedup:.2f}x")
-#
-#def test_slice_performance(test_data):
-#    fast_df = fdf.from_pandas(test_data) 
-#    
-#    start = time.time()
-#    for _ in range(1000):
-#        _ = test_data.loc[250000:750000, 'A':'C']
-#    pandas_time = time.time() - start
-#    
-#    start = time.time()
-#    for _ in range(1000):
-#        _ = fast_df.loc[250000:750000, 'A':'C']
-#    fastdf_time = time.time() - start
-#    
-#    assert fastdf_time < pandas_time
-#    speedup = pandas_time / fastdf_time
-#    print(f"\nSlice speedup: {speedup:.2f}x")
-#
-#def test_shift_performance(test_data):
-#    fast_df = fdf.from_pandas(test_data)
-#    
-#    start = time.time()
-#    _ = test_data.shift(1)
-#    pandas_time = time.time() - start
-#    
-#    start = time.time()
-#    _ = fast_df.shift(1)
-#    fastdf_time = time.time() - start
-#    
-#    assert fastdf_time < pandas_time
-#    speedup = pandas_time / fastdf_time
-#    print(f"\nShift speedup: {speedup:.2f}x")
-#
-#def test_any_performance(test_data):
-#    fast_df = fdf.from_pandas(test_data)
-#    
-#    start = time.time()
-#    _ = test_data.any()
-#    pandas_time = time.time() - start
-#    
-#    start = time.time()
-#    _ = fast_df.any()
-#    fastdf_time = time.time() - start
-#    
-#    assert fastdf_time < pandas_time
-#    speedup = pandas_time / fastdf_time
-#    print(f"\nAny speedup: {speedup:.2f}x")
-#
-#def test_correctness(test_data):
-#    fast_df = fdf.from_pandas(test_data)
-#    
-#    # Test getitem
-#    assert np.allclose(fast_df.loc[500000, 'B'], test_data.loc[500000, 'B'])
-#    
-#    # Test slice
-#    assert np.allclose(fast_df.loc[250000:750000, 'A':'C'], test_data.loc[250000:750000, 'A':'C'])
-#    
-#    # Test shift
-#    assert np.allclose(fast_df.shift(1).data, test_data.shift(1).values)
-#    
-#    # Test any
-#    assert np.allclose(fast_df.any(), test_data.any())
-#
-#if __name__ == "__main__":
-#    pytest.main([__file__])
+        print("\nPerformance comparison:")
+        for name, op in operations:
+            fdf_op = measure_time(op)
+            pdf_op = measure_time(op)
+            
+            _, fdf_time = fdf_op(self.fdf)
+            _, pdf_time = pdf_op(self.pdf)
+            
+            speedup = pdf_time / fdf_time
+            print(f"{name:10}: fdf {fdf_time:.6f}s, pandas {pdf_time:.6f}s, Speedup: {speedup:.2f}x")
+
+        fdf_access_time = time_access(self.fdf)
+        pdf_access_time = time_access(self.pdf)
+        access_speedup = pdf_access_time / fdf_access_time
+        print(f"{'Access':10}: fdf {fdf_access_time:.6f}s, pandas {pdf_access_time:.6f}s, Speedup: {access_speedup:.2f}x")
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

@@ -23,7 +23,7 @@ By leveraging the power of NumPy's 2D arrays and implementing only the essential
 
 In our benchmarks, FastDF has shown:
 
-- 126x faster data access compared to pandas
+- 40x faster data access compared to pandas
 - Significantly faster slicing operations
 - Reduced memory footprint
 
@@ -66,13 +66,19 @@ FastDF is designed to be a drop-in replacement for basic pandas operations. You 
 
 ```python
 # Your existing pandas code
-result = pandas_df.loc[1000:2000][ 'B']
+result = pandas_df.loc[1000:2000]['B']
 print(f"Pandas result {result}")
 
-# With FastDF
-fast_df = FastDataFrame.from_pandas(pandas_df)
-result_fdf = fast_df.loc[1000:2000][ 'B']
+# With FastDF from pandas
+fast_df = fdf.from_pandas(pandas_df)
+result_fdf = fast_df.loc[1000:2000]['B']
 print(f"FastDF result {result_fdf}")
+
+# With FastDF
+data = np.random.rand(1000, 5)
+columns = ['A', 'B', 'C', 'D', 'E']
+fast_df = fdf(data, columns)
+print(f"FastDF {fast_df}")
 ```
 
 ## 🤝 Contributing

@@ -5,9 +5,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="fastdf",
-    version="0.1.1",
-    author="Your Name",
-    author_email="your.email@example.com",
+    version="0.1.3",
+    author="stwrn",
+    author_email="stwrn@stwrn.com",
     description="A high-performance DataFrame implementation built on top of NumPy",
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -1,10 +1,10 @@
 Metadata-Version: 2.1
 Name: fastdf
-Version: 0.1.1
+Version: 0.1.3
 Summary: A high-performance DataFrame implementation built on top of NumPy
 Home-page: https://github.com/stwrn/fastdf
-Author: Your Name
-Author-email: your.email@example.com
+Author: stwrn
+Author-email: stwrn@stwrn.com
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Science/Research
@@ -18,13 +18,7 @@ Classifier: Programming Language :: Python :: 3.10
 Classifier: Topic :: Scientific/Engineering :: Information Analysis
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
-Requires-Dist: numpy>=1.18.0
-Requires-Dist: pandas>=1.0.0
 Provides-Extra: dev
-Requires-Dist: pytest>=6.0; extra == "dev"
-Requires-Dist: pytest-cov; extra == "dev"
-Requires-Dist: black; extra == "dev"
-Requires-Dist: isort; extra == "dev"
 
 # FastDF: High-Performance DataFrame for Python
 
@@ -51,7 +45,7 @@ By leveraging the power of NumPy's 2D arrays and implementing only the essential
 
 In our benchmarks, FastDF has shown:
 
-- 126x faster data access compared to pandas
+- 40x faster data access compared to pandas
 - Significantly faster slicing operations
 - Reduced memory footprint
 
@@ -94,11 +88,19 @@ FastDF is designed to be a drop-in replacement for basic pandas operations. You 
 
 ```python
 # Your existing pandas code
-result = df.loc[1000:2000, 'column_name']
+result = pandas_df.loc[1000:2000]['B']
+print(f"Pandas result {result}")
+
+# With FastDF from pandas
+fast_df = fdf.from_pandas(pandas_df)
+result_fdf = fast_df.loc[1000:2000]['B']
+print(f"FastDF result {result_fdf}")
 
 # With FastDF
-fast_df = fdf.from_pandas(df)
-result = fast_df.loc[1000:2000, 'column_name']
+data = np.random.rand(1000, 5)
+columns = ['A', 'B', 'C', 'D', 'E']
+fast_df = fdf(data, columns)
+print(f"FastDF {fast_df}")
 ```
 
 ## 🤝 Contributing
